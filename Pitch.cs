@@ -5,30 +5,24 @@ using System.IO;
 
 namespace SportClose
 {
-    class Pitch
+    public class Pitch
     {
-         
         public string Name { get; private set; }
         public string Sport { get; private set; }
-        public int Duration { get; private set; }
         public bool IsReserved { get; private set; }
         public DateTime ReservedStartTime { get; private set; }
         public DateTime ReservedEndTime { get; private set; }
 
-        public Pitch(string name, string sport, int duration)
+        public Pitch(string name, string sport)
         {
             Name = name;
             Sport = sport;
-            Duration = duration;
             IsReserved = false;
         }
-        public bool IsAvailable(int duration)
+
+        public bool IsAvailable()
         {
-            if (IsReserved)
-            {
-                return DateTime.Now.AddMinutes(duration) > ReservedEndTime;
-            }
-            return true;
+            return !IsReserved;
         }
 
         public void ReservePitch(DateTime startTime, DateTime endTime)
@@ -38,19 +32,16 @@ namespace SportClose
             ReservedEndTime = endTime;
         }
 
-        public void FreePitch(DateTime startTime, DateTime endTime)
+        public void FreePitch()
         {
-            if (IsReserved && startTime == ReservedStartTime && endTime == ReservedEndTime)
-            {
-                IsReserved = false;
-                ReservedStartTime = DateTime.MinValue;
-                ReservedEndTime = DateTime.MinValue;
-            }
+            IsReserved = false;
+            ReservedStartTime = DateTime.MinValue;
+            ReservedEndTime = DateTime.MinValue;
         }
 
         public override string ToString()
         {
-            return $"{Name} - {Sport} ({Duration} minutes)";
+            return $"{Name} - {Sport}";
         }
     }
 }

@@ -6,63 +6,24 @@ using System.Text;
 
 namespace SportClose
 {
-    class Program
-    {
-        private const string FilePath = "TextFile1.txt";
-        static List<Pitch> availablePitches;
-        static List<Booking> bookings;
+  public static  class Program
+  {
+        private static List<Pitch> availablePitches;
+        private static List<Booking> bookings;
 
-        static void Main(string[] args)
+        public static void Main()
         {
-          
             availablePitches = new List<Pitch>();
             bookings = new List<Booking>();
 
-            LoadPitchesFromDatabase(FilePath);
+            LoadAvailablePitches();
 
-            bool running = true;
-            while (running)
-            {
-                Console.WriteLine("Welcome to the Sport Pitch Booking App!");
-                Console.WriteLine("1. View available pitches");
-                Console.WriteLine("2. Book a pitch");
-                Console.WriteLine("3. View bookings");
-                Console.WriteLine("4. Cancel a booking");
-                Console.WriteLine("5. Exit");
-
-                Console.Write("Enter your choice: ");
-                string choice = Console.ReadLine();
-
-                Console.Clear();
-
-                switch (choice)
-                {
-                    case "1":
-                        ViewAvailablePitches();
-                        break;
-                    case "2":
-                        BookPitch();
-                        break;
-                    case "3":
-                        ViewBookings();
-                        break;
-                    case "4":
-                        CancelBooking();
-                        break;
-                    case "5":
-                        running = false;
-                        break;
-                    default:
-                        Console.WriteLine("Invalid choice. Please try again.");
-                        break;
-                }
-
-                Console.WriteLine();
-            }
+            PerformBookingOperations();
         }
 
-        static void LoadPitchesFromDatabase(string filePath)
+        private static void LoadAvailablePitches()
         {
+            string filePath = @"C:\Users\zala2\Documents\10z\SportClose\TextFile1.txt";
             if (File.Exists(filePath))
             {
                 try
@@ -75,16 +36,18 @@ namespace SportClose
                         {
                             string name = parts[0];
                             string sport = parts[1];
-                            int duration = int.Parse(parts[2]);
 
-                            availablePitches.Add(new Pitch(name, sport, duration));
+                            if (int.TryParse(parts[2], out int duration))
+                            {
+                                availablePitches.Add(new Pitch(name, sport));
+                            }
                         }
                     }
-                    Console.WriteLine("Pitches loaded successfully from the database.");
+                    Console.WriteLine("Available pitches loaded successfully.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error loading pitches from the database: {ex.Message}");
+                    Console.WriteLine($"Error loading available pitches: {ex.Message}");
                 }
             }
             else
@@ -92,111 +55,155 @@ namespace SportClose
                 Console.WriteLine("Pitches database file not found.");
             }
         }
+     
 
-        static void ViewAvailablePitches()
-          {
-            Console.WriteLine("Select a sport:");
+        private static void PerformBookingOperations()
+       
+        {
+            Console.WriteLine("----- SportClose-----");
+
+            while (true)
+            {
+                Console.WriteLine("\nSelect an option:");
+                Console.WriteLine("1. View available pitches");
+                Console.WriteLine("2. Book a pitch");
+                Console.WriteLine("3. View booked pitches");
+                Console.WriteLine("4. Exit");
+
+                Console.Write("Enter your choice: ");
+                string input = Console.ReadLine();
+
+                switch (input)
+                {
+                    case "1":
+                        ViewAvailablePitches();
+                        break;
+                    case "2":
+                        BookPitch();
+                        break;
+                    case "3":
+                        ViewBookedPitches();
+                        break;
+                    case "4":
+                        Console.WriteLine("-----------Thank you for using the SportClose. Goodbye!-----------");
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
+
+        private static void ViewAvailablePitches()
+        {
+            Console.WriteLine("\nSelect the sport:");
             Console.WriteLine("1. Football");
-            Console.WriteLine("2. Basketball");
-            Console.WriteLine("3. Tennis");
-            Console.WriteLine("4. Cricket");
+            Console.WriteLine("2. Tennis");
+            Console.WriteLine("3. Basketball");
+            Console.WriteLine("4. Volleyball");
 
             Console.Write("Enter your choice: ");
-            string sportChoice = Console.ReadLine();
+            string input = Console.ReadLine();
 
             string selectedSport;
-            switch (sportChoice)
+            switch (input)
             {
                 case "1":
                     selectedSport = "Football";
                     break;
                 case "2":
-                    selectedSport = "Basketball";
-                    break;
-                case "3":
                     selectedSport = "Tennis";
                     break;
+                case "3":
+                    selectedSport = "Basketball";
+                    break;
                 case "4":
-                    selectedSport = "Cricket";
+                    selectedSport = "Volleyball";
                     break;
                 default:
-                    Console.WriteLine("Invalid sport choice. Returning to main menu.");
+                    Console.WriteLine("Invalid choice. Please try again.");
                     return;
             }
 
             var availablePitchesForSport = availablePitches.Where(p => p.Sport == selectedSport).ToList();
             if (availablePitchesForSport.Any())
             {
-                Console.WriteLine($"Available {selectedSport} pitches:");
+                Console.WriteLine($"\nAvailable {selectedSport} pitches:");
                 foreach (Pitch pitch in availablePitchesForSport)
                 {
-                    Console.WriteLine(pitch);
+                    Console.WriteLine(pitch.ToString());
                 }
             }
             else
             {
-                Console.WriteLine($"No available {selectedSport} pitches.");
+                Console.WriteLine($"\nNo available {selectedSport} pitches.");
             }
         }
 
-
-        static void BookPitch()
+        private static void BookPitch()
         {
-            Console.Write("Enter the name of the pitch you want to book: ");
-            string pitchName = Console.ReadLine();
+            Console.WriteLine("\nSelect the sport:");
+            Console.WriteLine("1. Football");
+            Console.WriteLine("2. Tennis");
+            Console.WriteLine("3. Basketball");
+            Console.WriteLine("4. Volleyball");
 
-            Console.Write("Enter the duration (in minutes): ");
-            int duration = int.Parse(Console.ReadLine());
+            Console.Write("Enter your choice: ");
+            string input = Console.ReadLine();
 
-            Pitch selectedPitch = availablePitches.Find(p => p.Name == pitchName);
-
-            if (selectedPitch != null && selectedPitch.IsAvailable(duration))
+            string selectedSport;
+            switch (input)
             {
-                DateTime startTime = DateTime.Now;
-                DateTime endTime = startTime.AddMinutes(duration);
+                case "1":
+                    selectedSport = "Football";
+                    break;
+                case "2":
+                    selectedSport = "Tennis";
+                    break;
+                case "3":
+                    selectedSport = "Basketball";
+                    break;
+                case "4":
+                    selectedSport = "Volleyball";
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    return;
+            }
 
-                Booking newBooking = new Booking(selectedPitch, startTime, endTime);
+            var availablePitchesForSport = availablePitches.Where(p => p.Sport == selectedSport && p.IsAvailable()).ToList();
+            if (availablePitchesForSport.Any())
+            {
+               
+                Pitch selectedPitch = availablePitchesForSport.First();
+                DateTime reservedTime = DateTime.Now;
+                selectedPitch.ReservePitch(reservedTime, reservedTime); 
+
+                Booking newBooking = new Booking(selectedPitch, reservedTime);
                 bookings.Add(newBooking);
 
-                selectedPitch.ReservePitch(startTime, endTime);
-
-                Console.WriteLine("Pitch booked successfully!");
-                Console.WriteLine(newBooking);
+                Console.WriteLine("\nPitch booked successfully!");
+                Console.WriteLine(newBooking.ToString());
             }
             else
             {
-                Console.WriteLine("Invalid pitch name or duration. Please try again.");
+                Console.WriteLine($"\nNo available {selectedSport} pitches.");
             }
         }
-
-        static void ViewBookings()
+        private static void ViewBookedPitches()
         {
-            Console.WriteLine("Booked pitches:");
-            foreach (Booking booking in bookings)
+            if (bookings.Any())
             {
-                Console.WriteLine(booking);
-            }
-        }
-
-        static void CancelBooking()
-        {
-            Console.Write("Enter the name of the pitch you want to cancel: ");
-            string pitchName = Console.ReadLine();
-
-            Booking bookingToRemove = bookings.Find(b => b.Pitch.Name == pitchName);
-
-            if (bookingToRemove != null)
-            {
-                bookingToRemove.Pitch.FreePitch(bookingToRemove.StartTime, bookingToRemove.EndTime);
-                bookings.Remove(bookingToRemove);
-
-                Console.WriteLine("Booking canceled successfully!");
+                Console.WriteLine("\nBooked pitches:");
+                foreach (Booking booking in bookings)
+                {
+                    Console.WriteLine(booking.ToString());
+                }
             }
             else
             {
-                Console.WriteLine("No booking found for the specified pitch name. Please try again.");
+                Console.WriteLine("\nNo pitches booked yet.");
             }
         }
-        }
-
     }
+}
